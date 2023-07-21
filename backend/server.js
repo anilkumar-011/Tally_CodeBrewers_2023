@@ -31,11 +31,24 @@ app.listen(PORT, () =>
 // Route to send the array of words to the client
 app.get("/start", async (req, res) => {
   try {
-    // Fetch the document from the "Words" collection
-    const object_index = Math.floor(Math.random() * 2);
+    const time = parseInt(req.query.time); // Extract the time value from the query parameters
+    const difficulty = req.query.difficulty; // Extract the difficulty value from the query parameters
+
+    // Validate the time and difficulty values
+    if (isNaN(time) || time <= 0) {
+      return res.status(400).json({ message: "Invalid time value" });
+    }
+
+    if (!["easy", "medium", "hard"].includes(difficulty)) {
+      return res.status(400).json({ message: "Invalid difficulty value" });
+    }
+
+    // Fetch the document from the "Words" collection based on the difficulty level
     const document = await test_db
       .collection("Words")
-      .findOne({ index: object_index });
+      .findOne({ level: difficulty });
+
+    console.log(document)
 
     if (
       !document ||
@@ -54,12 +67,12 @@ app.get("/start", async (req, res) => {
     res.setHeader("Expires", "0");
 
     // Send the entire array of words_for_typing in the response
-    // console.log(document);
     res.json(document.words_for_typing);
   } catch (error) {
     console.error("Error fetching words:", error);
     res.status(500).json({ error: "Unable to fetch words" });
   }
 });
+
 
 
