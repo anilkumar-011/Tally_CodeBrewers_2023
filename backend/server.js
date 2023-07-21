@@ -7,6 +7,8 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 
 const app = express();
+const registerModel = require("./models/register"); // Corrected the import path
+
 app.use(express.static("public"));
 app.use(cors());
 app.use(morgan("tiny"));
@@ -32,23 +34,21 @@ app.listen(PORT, () =>
 app.get("/start", async (req, res) => {
   try {
     const time = parseInt(req.query.time); // Extract the time value from the query parameters
-    const difficulty = req.query.difficulty; // Extract the difficulty value from the query parameters
+    const level = req.query.level; // Extract the level value from the query parameters
 
-    // Validate the time and difficulty values
+    // Validate the time and level values
     if (isNaN(time) || time <= 0) {
       return res.status(400).json({ message: "Invalid time value" });
     }
 
-    if (!["easy", "medium", "hard"].includes(difficulty)) {
-      return res.status(400).json({ message: "Invalid difficulty value" });
+    if (!["easy", "medium", "hard"].includes(level)) {
+      return res.status(400).json({ message: "Invalid level value" });
     }
 
-    // Fetch the document from the "Words" collection based on the difficulty level
+    // Fetch the document from the "Words" collection based on the level level
     const document = await test_db
       .collection("Words")
-      .findOne({ level: difficulty });
-
-    console.log(document)
+      .findOne({ level: level });
 
     if (
       !document ||
@@ -74,5 +74,44 @@ app.get("/start", async (req, res) => {
   }
 });
 
+app.post("/signup", async (req, res) => {
+  console.log("here I am");
 
+  const new_user = new registerModel({
+    name: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+  });
+  console.log(new_user);
 
+  try {
+    await new_user.save();
+    console.log("added");
+    res.redirect("login.html");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred during registration");
+  }
+});
+
+app.post("/login", async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  try {
+    const result = await registerModel.find({
+      email: email,
+      password: password,
+    });
+    console.log(result);
+    if (result.length !== 0) {
+      res.send("ewww OG bro nuvu");
+      res.redirect("home.html");
+    } else {
+      res.send("Invalid password/name");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred during login");
+  }
+});
