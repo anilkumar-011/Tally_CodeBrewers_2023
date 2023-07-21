@@ -105,7 +105,6 @@ app.post("/login", async (req, res) => {
     });
     console.log(result);
     if (result.length !== 0) {
-      res.send("ewww OG bro nuvu");
       res.redirect("home.html");
     } else {
       res.send("Invalid password/name");
