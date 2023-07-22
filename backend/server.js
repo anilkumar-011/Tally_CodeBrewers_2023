@@ -9,7 +9,7 @@ const { Server } = require("socket.io");
 require("dotenv").config();
 
 const app = express();
-const registerModel = require("./models/register"); // Corrected the import path
+// const registerModel = require("./models/register"); // Corrected the import path
 
 app.use(express.static("public"));
 app.use(cors());
@@ -149,3 +149,7 @@ const saveMessage = (messageData) => {
   console.log("Message saved to messages array:", messageData);
   console.log(messages)
 };
+
+server.listen(3001, () => {
+  console.log("SERVER IS RUNNING");
+});
