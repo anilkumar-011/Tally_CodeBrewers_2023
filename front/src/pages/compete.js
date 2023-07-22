@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios"
 import io from "socket.io-client";
 const socket = io.connect("http://localhost:3001");
-
+var globaltime=0
 function Word(props) {
     const { text, active, correct } = props;
     if (correct === true) {
@@ -23,21 +23,17 @@ const Timer = (props) => {
     const { start, index, correctCount,gameEnd } = props
     const [time, setTime] = useState(0)
     useEffect(() => {
-        if (start) {
+        if (start && !gameEnd) {
             setInterval(() => {
                 setTime(t => t + 1)
             }, 1000);
         }
     }, [start])
-    if (gameEnd){
-        return time
-    }
-
-    return       [<div className=" flex justify-around">
+    return       <div className=" flex justify-around">
         <div>Time elapsed: {time || 0}</div>
         <div>Accuracy: {(((correctCount / index)) * 100 || 0).toFixed(2)} %</div>
         <div>WPM: {(Math.floor(((index / time).toFixed(2)) * 60) || 0).toFixed(2)}</div>
-    </div>,time]
+    </div>
 
 }
 
@@ -71,7 +67,7 @@ function Compete() {
             const a = temp.split(' ')
             const x = a[a.length - 2]
             setindex(a => a + 1)
-            if (index === sentence.length - 1) {
+            if (index === sentence.length ) {
                 setGameStart(false)
                 setGameEnd(true)
                 console.log('done bro')
@@ -102,7 +98,7 @@ function Compete() {
             <div>
                 <div className=" text-lg mx-auto">
                     <div className=" my-5 text-lg font-semibold text-yellow-400">
-                        <Timer start={startTime} index={index} correctCount={correctCount} />
+                        <Timer start={startTime} index={index} correctCount={correctCount} gameEnd={gameEnd}/>
                     </div>
 
                     <p>
@@ -122,7 +118,7 @@ function Compete() {
 
     const Results = () => {
         if (gameEnd){
-            const t=Timer(gameEnd=gameEnd)
+            const t=''
             const res={
                 time:t,
                 accuracy:(((correctCount / index)) * 100 || 0).toFixed(2),

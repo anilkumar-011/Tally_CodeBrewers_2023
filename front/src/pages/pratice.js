@@ -55,7 +55,7 @@ function Pratice() {
 				const newwords = [...data]
 				let w = x.trim()
 				newwords[index] = w === sentence[index]
-				if (w === sentence[index]) setCorrectCount(a => a + 1)
+				if (w === sentence[index]) setCorrectCount(a => a + 0.5)
 				return newwords
 			})
 			const a = temp.split(' ')
@@ -90,7 +90,7 @@ function Pratice() {
 			<div>
 				<div className=" text-lg mx-auto">
 					<div className=" my-5 text-lg font-semibold text-yellow-400">
-						<Timer start={startTime} index={index} correctCount={correctCount} />
+						<Timer start={startTime} index={index} correctCount={correctCount}  />
 					</div>
 
 					<p>
